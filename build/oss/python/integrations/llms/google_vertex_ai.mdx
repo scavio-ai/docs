@@ -1,6 +1,9 @@
 ---
-title: "Google cloud Vertex AI integration"
-description: "Integrate with the Google cloud Vertex AI LLM using LangChain Python."
+title: Google cloud Vertex AI integration
+description: Integrate with the Google cloud Vertex AI LLM using LangChain Python.
+integration:
+  name: Google cloud Vertex AI
+  pypi: langchain-google-vertexai
 ---
 
 <Danger>
@@ -70,8 +73,9 @@ await model.ainvoke(message)
 ```
 
 ```python
-for chunk in model.stream(message):
-    print(chunk, end="", flush=True)
+stream = model.stream_events(message, version="v3")
+for token in stream.text:
+    print(token, end="", flush=True)
 ```
 
 ```text
@@ -604,10 +608,10 @@ AIMessage(content='Prompt:\n<start_of_turn>user\nHow much is 2+2?<end_of_turn>\n
 ---
 
 <div className="source-links">
-<Callout icon="edit">
-    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/oss/python/integrations/llms/google_vertex_ai.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
-</Callout>
 <Callout icon="terminal-2">
     [Connect these docs](/use-these-docs) to Claude, VSCode, and more via MCP for real-time answers.
+</Callout>
+<Callout icon="edit">
+    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/oss/python/integrations/llms/google_vertex_ai.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
 </Callout>
 </div>

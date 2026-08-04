@@ -6,7 +6,7 @@ icon: "browser"
 
 [_Datasets_](/langsmith/evaluation-concepts#datasets) enable you to perform repeatable evaluations over time using consistent data. Datasets are made up of [_examples_](/langsmith/evaluation-concepts#examples), which store inputs, outputs, and optionally, reference outputs.
 
-This page outlines the various methods for [creating](#create-a-dataset-and-add-examples) and [managing](#manage-a-dataset) datasets in the [UI](https://smith.langchain.com).
+This page outlines the various methods for [creating](#create-a-dataset-and-add-examples) and [managing](#manage-a-dataset) datasets in the [UI](https://smith.langchain.com?utm_source=docs&utm_medium=cta&utm_campaign=langsmith-signup&utm_content=langsmith-manage-datasets-in-application).
 
 ## Create a dataset and add examples
 
@@ -50,6 +50,10 @@ If you rely on subject matter experts to build meaningful datasets, use [annotat
 You can optionally configure annotation queues with a default dataset, though you can add runs to any dataset by using the dataset switcher on the bottom of the screen. Once you select the right dataset, click **Add to Dataset** or hit the hot key `D` to add the run to it.
 
 Any modifications you make to the run in your annotation queue will carry over to the dataset, and all metadata associated with the run will also be copied.
+
+<Note>
+**Add to Dataset** is available for **run** queue items only. [Thread](/langsmith/observability-concepts#threads) items in an annotation queue support rubric feedback, but not dataset export.
+</Note>
 
 <Tip>
 You can also set up rules to add runs that meet specific criteria to an annotation queue using [automation rules](/langsmith/rules).
@@ -177,10 +181,10 @@ You may add multiple filters, and only examples that satisfy all of the filters 
 ---
 
 <div className="source-links">
-<Callout icon="edit">
-    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/langsmith/manage-datasets-in-application.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
-</Callout>
 <Callout icon="terminal-2">
     [Connect these docs](/use-these-docs) to Claude, VSCode, and more via MCP for real-time answers.
+</Callout>
+<Callout icon="edit">
+    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/langsmith/manage-datasets-in-application.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
 </Callout>
 </div>

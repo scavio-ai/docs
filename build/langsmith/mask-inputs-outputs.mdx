@@ -8,9 +8,11 @@ When working with LangSmith traces, you may need to prevent sensitive informatio
 - [Completely hide inputs and outputs](#hide-inputs-and-outputs) using environment variables or [Client](https://reference.langchain.com/python/langsmith/client/Client) configuration.
 - [Hide metadata](#hide-metadata) to remove or transform run metadata.
 - [Apply rule-based masking](#rule-based-masking-of-inputs-and-outputs) with regex patterns or anonymization libraries to selectively redact sensitive information.
+- [Redact secrets from traces](/langsmith/redact-secrets) using the SDK anonymizer with ready-to-use regex patterns for API keys, tokens, and credentials.
 - [Process inputs and outputs for individual functions](#processing-inputs-and-outputs-for-a-single-function) with function-level customization.
 - [Use third-party anonymizers](#examples) like Microsoft Presidio and Amazon Comprehend for advanced PII detection.
 - [Batch process run operations](#batch-processing-for-high-throughput-masking) to apply expensive masking logic across multiple runs at once, reducing per-run overhead. LangSmith processes runs in a background thread, which does not block your application.
+- [Redact inputs and outputs per request](/langsmith/conditional-tracing#conditionally-redact-inputs-and-outputs) using `tracing_context` to mask data only for specific invocations (for example, based on tenant or feature flag) while leaving other traces untouched.
 
 <Note>
 If your compliance or privacy requirements mandate that certain operations should never be traced at all (for example, clients with zero-retention policies), consider using [conditional tracing](/langsmith/conditional-tracing) to disable tracing selectively for specific requests instead of masking data.
@@ -45,7 +47,7 @@ langsmith_client = Client(
 
 # The trace produced will have its metadata present, but the inputs will be hidden
 openai_client.chat.completions.create(
-    model="gpt-4.1-mini",
+    model="gpt-5.4-mini",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Hello!"},
@@ -55,7 +57,7 @@ openai_client.chat.completions.create(
 
 # The trace produced will not have hidden inputs and outputs
 openai_client.chat.completions.create(
-    model="gpt-4.1-mini",
+    model="gpt-5.4-mini",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Hello!"},
@@ -78,7 +80,7 @@ const filteredOAIClient = wrapOpenAI(new OpenAI(), {
     client: langsmithClient,
 });
 await filteredOAIClient.chat.completions.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.4-mini",
     messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Hello!" },
@@ -88,7 +90,7 @@ await filteredOAIClient.chat.completions.create({
 const openaiClient = wrapOpenAI(new OpenAI());
 // The trace produced will not have hidden inputs and outputs
 await openaiClient.chat.completions.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.4-mini",
     messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Hello!" },
@@ -185,6 +187,10 @@ This feature is available in the following LangSmith SDK versions:
 </Info>
 
 To mask specific data in inputs and outputs, you can use the `create_anonymizer` / `createAnonymizer` function and pass the newly created anonymizer when instantiating the [Client](https://reference.langchain.com/python/langsmith/client/Client). The anonymizer can be either constructed from a list of regex patterns and the replacement values or from a function that accepts and returns a string value.
+
+<Tip>
+For redacting API keys, tokens, and other credentials, see [Redact secrets from traces](/langsmith/redact-secrets) for ready-to-use regex patterns and recipes.
+</Tip>
 
 The anonymizer will be skipped for inputs if `LANGSMITH_HIDE_INPUTS = true`. Same applies for outputs if `LANGSMITH_HIDE_OUTPUTS = true`.
 
@@ -480,7 +486,7 @@ langsmith_client = Client(
 
 # The trace produced will have its metadata present, but the inputs and outputs will be anonymized
 response_with_anonymization = openai_client.chat.completions.create(
-    model="gpt-4.1-mini",
+    model="gpt-5.4-mini",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "My name is John Doe, my SSN is 123-45-6789, my credit card number is 4111 1111 1111 1111, my email is john.doe@example.com, and my phone number is (123) 456-7890."},
@@ -490,7 +496,7 @@ response_with_anonymization = openai_client.chat.completions.create(
 
 # The trace produced will not have anonymized inputs and outputs
 response_without_anonymization = openai_client.chat.completions.create(
-    model="gpt-4.1-mini",
+    model="gpt-5.4-mini",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "My name is John Doe, my SSN is 123-45-6789, my credit card number is 4111 1111 1111 1111, my email is john.doe@example.com, and my phone number is (123) 456-7890."},
@@ -590,7 +596,7 @@ langsmith_client = Client(
 
 # The trace produced will have its metadata present, but the inputs and outputs will be anonymized
 response_with_anonymization = openai_client.chat.completions.create(
-  model="gpt-4.1-mini",
+  model="gpt-5.4-mini",
   messages=[
       {"role": "system", "content": "You are a helpful assistant."},
       {"role": "user", "content": "My name is Slim Shady, call me at 313-666-7440 or email me at real.slim.shady@gmail.com"},
@@ -600,7 +606,7 @@ response_with_anonymization = openai_client.chat.completions.create(
 
 # The trace produced will not have anonymized inputs and outputs
 response_without_anonymization = openai_client.chat.completions.create(
-  model="gpt-4.1-mini",
+  model="gpt-5.4-mini",
   messages=[
       {"role": "system", "content": "You are a helpful assistant."},
       {"role": "user", "content": "My name is Slim Shady, call me at 313-666-7440 or email me at real.slim.shady@gmail.com"},
@@ -732,7 +738,7 @@ langsmith_client = Client(
 
 # The trace produced will have its metadata present, but the inputs and outputs will be anonymized
 response_with_anonymization = openai_client.chat.completions.create(
-  model="gpt-4.1-mini",
+  model="gpt-5.4-mini",
   messages=[
       {"role": "system", "content": "You are a helpful assistant."},
       {"role": "user", "content": "My name is Slim Shady, call me at 313-666-7440 or email me at real.slim.shady@gmail.com"},
@@ -742,7 +748,7 @@ response_with_anonymization = openai_client.chat.completions.create(
 
 # The trace produced will not have anonymized inputs and outputs
 response_without_anonymization = openai_client.chat.completions.create(
-  model="gpt-4.1-mini",
+  model="gpt-5.4-mini",
   messages=[
       {"role": "system", "content": "You are a helpful assistant."},
       {"role": "user", "content": "My name is Slim Shady, call me at 313-666-7440 or email me at real.slim.shady@gmail.com"},
@@ -803,7 +809,7 @@ Each run dict in the batch is either a create operation (with `inputs`, sent whe
 }
 ```
 
-The following example uses Comprehend's [`batch_detect_pii_entities` endpoint](https://docs.aws.amazon.com/comprehend/latest/APIReference/API_BatchDetectEntities.html), which accepts up to 25 texts per call. With the per-run approach (`hide_inputs`) you would make one API call per run. Here, all message texts across the entire buffer are gathered first, then sent to Comprehend in chunks of 25, which results in significantly fewer API calls at high throughput.
+The following example uses Comprehend's [`batch_detect_entities` endpoint](https://docs.aws.amazon.com/comprehend/latest/APIReference/API_BatchDetectEntities.html), which accepts up to 25 texts per call. With the per-run approach (`hide_inputs`) you would make one API call per run. Here, all message texts across the entire buffer are gathered first, then sent to Comprehend in chunks of 25, which results in significantly fewer API calls at high throughput.
 
 ```python
 import boto3
@@ -839,7 +845,7 @@ def comprehend_anonymize_batch(runs: list[dict]) -> list[dict]:
     redacted_texts = []
     for i in range(0, len(texts), 25):
         chunk = texts[i : i + 25]
-        response = comprehend.batch_detect_pii_entities(
+        response = comprehend.batch_detect_entities(
             TextList=chunk, LanguageCode="en"
         )
         for text, result in zip(chunk, response["ResultList"]):
@@ -873,10 +879,10 @@ finally:
 ---
 
 <div className="source-links">
-<Callout icon="edit">
-    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/langsmith/mask-inputs-outputs.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
-</Callout>
 <Callout icon="terminal-2">
     [Connect these docs](/use-these-docs) to Claude, VSCode, and more via MCP for real-time answers.
+</Callout>
+<Callout icon="edit">
+    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/langsmith/mask-inputs-outputs.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
 </Callout>
 </div>

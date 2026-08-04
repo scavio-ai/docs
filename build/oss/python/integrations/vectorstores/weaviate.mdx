@@ -1,7 +1,23 @@
 ---
-title: "Weaviate integration"
-description: "Integrate with the Weaviate vector store using LangChain Python."
+title: Weaviate integration
+description: Integrate with the Weaviate vector store using LangChain Python.
+integration:
+  name: Weaviate
+  pypi: langchain-weaviate
+  featured: true
+  delete_by_id: true
+  filtering: true
+  search_by_vector: true
+  search_with_score: true
+  async_api: true
+  passes_standard_tests: false
+  multi_tenancy: true
+  ids_in_add_documents: true
 ---
+
+
+
+import LangchainCommunityUnmaintained from '/snippets/python/oss/langchain-community-unmaintained.mdx';
 
 This notebook covers how to get started with the Weaviate vector store in LangChain, using the `langchain-weaviate` package.
 
@@ -72,6 +88,8 @@ Here is an example of how to find objects by similarity to a query, from data im
 ### Step 1: Data import
 
 First, we will create data to add to `Weaviate` by loading and chunking the contents of a long text file.
+
+<LangchainCommunityUnmaintained />
 
 ```python
 from langchain_community.document_loaders import TextLoader
@@ -456,10 +474,10 @@ This integration allows Weaviate to be used with LangChain to enhance the capabi
 ---
 
 <div className="source-links">
-<Callout icon="edit">
-    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/oss/python/integrations/vectorstores/weaviate.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
-</Callout>
 <Callout icon="terminal-2">
     [Connect these docs](/use-these-docs) to Claude, VSCode, and more via MCP for real-time answers.
+</Callout>
+<Callout icon="edit">
+    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/oss/python/integrations/vectorstores/weaviate.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
 </Callout>
 </div>

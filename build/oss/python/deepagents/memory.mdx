@@ -7,6 +7,8 @@ Memory lets your agent learn and improve across conversations. Deep Agents makes
 
 <Note>
 This page covers **long-term memory**: memory that persists across conversations. For short-term memory (conversation history and scratch files within a single session), see the [context engineering](/oss/python/deepagents/context-engineering) guide. Short-term memory is managed automatically as part of the agent's [state](/oss/python/langgraph/graph-api#state).
+
+![Short-term memory is scoped to a single thread via checkpoints; long-term memory persists across threads via the store](/oss/images/deepagents/production/memory.png)
 </Note>
 
 ## How memory works
@@ -39,6 +41,7 @@ from deepagents import create_deep_agent
 from deepagents.backends import CompositeBackend, StateBackend, StoreBackend
 
 agent = create_deep_agent(
+    model="google_genai:gemini-3.6-flash",
     memory=["/memories/AGENTS.md"],
     skills=["/skills/"],
     backend=CompositeBackend(
@@ -102,6 +105,7 @@ Use the fetch_url tool to read https://docs.langchain.com/llms.txt, then fetch r
 )
 
 agent = create_deep_agent(
+    model="google_genai:gemini-3.6-flash",
     memory=["/memories/AGENTS.md"],
     skills=["/skills/"],
     backend=lambda rt: CompositeBackend(
@@ -149,6 +153,7 @@ from deepagents import create_deep_agent
 from deepagents.backends import CompositeBackend, StateBackend, StoreBackend
 
 agent = create_deep_agent(
+    model="google_genai:gemini-3.6-flash",
     memory=["/memories/preferences.md"],
     skills=["/skills/"],
     backend=CompositeBackend(
@@ -217,6 +222,7 @@ Use the fetch_url tool to read https://docs.langchain.com/llms.txt, then fetch r
 )
 
 agent = create_deep_agent(
+    model="google_genai:gemini-3.6-flash",
     memory=["/memories/preferences.md"],
     skills=["/skills/"],
     backend=lambda rt: CompositeBackend(
@@ -266,7 +272,7 @@ On top of the basic configuration options for memory paths and scope, you can al
 
 Episodic memory stores records of past experiences: what happened, in what order, and what the outcome was. Unlike semantic memory (facts and preferences stored in files like `AGENTS.md`), episodic memory preserves the full conversational context so the agent can recall *how* a problem was solved, not just *what* was learned from it.
 
-Deep Agents already use [checkpointers](/oss/python/langgraph/persistence#checkpoints) which is the mechanism that supports episodic memory: every conversation is persisted as a checkpointed thread.
+Deep Agents already use [checkpointers](/oss/python/langgraph/checkpointers#checkpoints) which is the mechanism that supports episodic memory: every conversation is persisted as a checkpointed thread.
 
 To make past conversations searchable, wrap thread search in a tool. The `user_id` is pulled from the runtime context rather than passed as a parameter:
 
@@ -327,6 +333,7 @@ from deepagents import create_deep_agent
 from deepagents.backends import CompositeBackend, StateBackend, StoreBackend
 
 agent = create_deep_agent(
+    model="google_genai:gemini-3.6-flash",
     memory=[
         "/memories/preferences.md",
         "/policies/compliance.md",
@@ -419,7 +426,7 @@ async def search_recent_conversations(query: str, runtime: ToolRuntime) -> str:
 
 
 agent = create_deep_agent(
-    model="claude-sonnet-4-6",
+    model="google_genai:gemini-3.6-flash",
     system_prompt="""Review recent conversations and update the user's memory file.
 Merge new facts, remove outdated information, and keep it concise.""",
     tools=[search_recent_conversations],
@@ -454,10 +461,10 @@ graph LR
     Cron[Cron schedule] -->|periodic| Agent[Consolidation agent]
     Agent -->|writes| Store
 
-    classDef trigger fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#14532D
-    classDef process fill:#DBEAFE,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
-    classDef output fill:#F3E8FF,stroke:#9333EA,stroke-width:2px,color:#581C87
-    classDef schedule fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E
+    classDef trigger fill:#F6FFDB,stroke:#6E8900,stroke-width:2px,color:#2E3900
+    classDef process fill:#E5F4FF,stroke:#006DDD,stroke-width:2px,color:#030710
+    classDef output fill:#EBD0F0,stroke:#885270,stroke-width:2px,color:#441E33
+    classDef schedule fill:#FDF3FF,stroke:#7E65AE,stroke-width:2px,color:#504B5F
 
     class Conv1,Conv2 trigger
     class Agent process
@@ -540,10 +547,10 @@ Use [LangSmith tracing](/langsmith/trace-with-langgraph) to audit what your agen
 ---
 
 <div className="source-links">
-<Callout icon="edit">
-    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/oss/deepagents/memory.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
-</Callout>
 <Callout icon="terminal-2">
     [Connect these docs](/use-these-docs) to Claude, VSCode, and more via MCP for real-time answers.
+</Callout>
+<Callout icon="edit">
+    [Edit this page on GitHub](https://github.com/langchain-ai/docs/edit/main/src/oss/deepagents/memory.mdx) or [file an issue](https://github.com/langchain-ai/docs/issues/new/choose).
 </Callout>
 </div>
